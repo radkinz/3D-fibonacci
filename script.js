@@ -55,7 +55,7 @@ for (let i = 0; i < sq.length; i++) {
 
 //render scene
 camera.position.y = 1;
-camera.position.z = 12;
+camera.position.z = 15;
 
 window.requestAnimationFrame(animate);
 let mouseX = 0;
@@ -77,16 +77,18 @@ function drawfibonacci(n) {
     let fibonacciNums = fibonacci(n);
     let direction = 1;
     console.log(fibonacciNums);
-    sq.push(new Square(0, -2, -5, 1, fibonacciNums[fibonacciNums.length - 1]));
+    sq.push(new Square(0, -2, -5, 4, fibonacciNums[fibonacciNums.length - 1]));
 
     for (let i = fibonacciNums.length - 2; i >= 0; i--) {
         //add new length variable
-        let newLength = fibonacciNums[i] / fibonacciNums[i + 1];
+        let newLength = (fibonacciNums[i] / fibonacciNums[fibonacciNums.length - 1])*4;
 
         //manage the really low numbers
         if (i < 3) {
             newLength = sq[sq.length - 1].length*0.8;
         }
+
+        console.log(newLength, (fibonacciNums[i] / fibonacciNums[fibonacciNums.length - 1]));
   
         //add new square
         if (direction == 1) {
