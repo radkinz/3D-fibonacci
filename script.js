@@ -4,15 +4,15 @@ import * as THREE from 'https://cdn.skypack.dev/three';
 
 //create square object
 class Square {
-    constructor(xx, yy, zz, l, fibnum) {
+    constructor(xx, yy, zz, l) {
         this.x = xx;
         this.y = yy;
         this.z = zz;
         this.length = l;
         this.geometry = new THREE.BoxGeometry();
-        this.material = new THREE.MeshBasicMaterial({ color: 0x999999, wireframe: true, transparent: false, opacity: 0.9 });
+        this.color = get_random_color();
+        this.material = new THREE.MeshBasicMaterial({ color: hslToHex(this.color[0], this.color[1], this.color[2]), wireframe: false, transparent: true, opacity: 0.9 });
         this.cube = new THREE.Mesh(this.geometry, this.material);
-        this.fibonacciNumber = fibnum;
     }
 
     drawCube() {
@@ -45,8 +45,8 @@ let sq = [];
 var group = new THREE.Object3D();
 scene.add(group);
 
-//generate ribonacci spiral
-drawfibonacci(12);
+//generate fibonacci spiral
+drawfibonacci(30);
 
 //display squares
 for (let i = 0; i < sq.length; i++) {
@@ -76,20 +76,22 @@ function animate() {
 function drawfibonacci(n) {
     let fibonacciNums = fibonacci(n);
     let direction = 1;
-    console.log(fibonacciNums);
-    sq.push(new Square(0, -2, -5, 4, fibonacciNums[fibonacciNums.length - 1]));
+
+    //scale fibonacci spiral down
+    let minsize = Math.floor(n*0.25);
+    sq.push(new Square(0, -2, -5, minsize, fibonacciNums[fibonacciNums.length - 1]));
 
     for (let i = fibonacciNums.length - 2; i >= 0; i--) {
         //add new length variable
-        let newLength = (fibonacciNums[i] / fibonacciNums[fibonacciNums.length - 1])*4;
+        let newLength = (fibonacciNums[i] / fibonacciNums[fibonacciNums.length - 1]) * minsize;
 
         //manage the really low numbers
         if (i < 3) {
-            newLength = sq[sq.length - 1].length*0.8;
+            newLength = sq[sq.length - 1].length * 0.8;
         }
 
         console.log(newLength, (fibonacciNums[i] / fibonacciNums[fibonacciNums.length - 1]));
-  
+
         //add new square
         if (direction == 1) {
             sq.push(
@@ -97,8 +99,7 @@ function drawfibonacci(n) {
                     sq[sq.length - 1].x + sq[sq.length - 1].length / 2 + newLength / 2,
                     sq[sq.length - 1].y + sq[sq.length - 1].length / 2 + newLength / 2,
                     sq[sq.length - 1].z - newLength / 2,
-                    newLength,
-                    fibonacciNums[i]
+                    newLength
                 ));
         } else if (direction == 2) {
             sq.push(
@@ -106,8 +107,7 @@ function drawfibonacci(n) {
                     sq[sq.length - 1].x - sq[sq.length - 1].length / 2 + newLength / 2,
                     sq[sq.length - 1].y + sq[sq.length - 1].length / 2 + newLength / 2,
                     sq[sq.length - 1].z + sq[sq.length - 1].length / 2 + newLength / 2,
-                    newLength,
-                    fibonacciNums[i]
+                    newLength
                 )
             );
         } else if (direction == 3) {
@@ -116,8 +116,7 @@ function drawfibonacci(n) {
                     sq[sq.length - 1].x - sq[sq.length - 1].length / 2 - newLength / 2,
                     sq[sq.length - 1].y + sq[sq.length - 1].length / 2 + newLength / 2,
                     sq[sq.length - 1].z - newLength / 2,
-                    newLength,
-                    fibonacciNums[i]
+                    newLength
                 )
             );
         } else {
@@ -126,8 +125,7 @@ function drawfibonacci(n) {
                     sq[sq.length - 1].x - sq[sq.length - 1].length / 2 + newLength / 2,
                     sq[sq.length - 1].y + sq[sq.length - 1].length / 2 + newLength / 2,
                     sq[sq.length - 1].z - sq[sq.length - 1].length / 2 - newLength / 2,
-                    newLength,
-                    fibonacciNums[i]
+                    newLength
                 )
             );
         }
@@ -140,7 +138,6 @@ function drawfibonacci(n) {
         }
     }
 }
-
 function fibonacci(n) {
     let nums = [];
     nums.push(0);
@@ -151,4 +148,26 @@ function fibonacci(n) {
     }
 
     return nums;
+}
+
+function rand(min, max) {
+    return min + Math.random() * (max - min);
+}
+
+function get_random_color() {
+    var h = rand(1, 360);
+    var s = rand(50, 100);
+    var l = rand(50, 100);
+    return [h, s, l]
+}
+
+function hslToHex(h, s, l) {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = n => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
 }
