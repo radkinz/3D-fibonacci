@@ -79,7 +79,7 @@ function drawfibonacci(n) {
 
     //scale fibonacci spiral down
     let minsize = Math.floor(n*0.25);
-    sq.push(new Square(0, -2, -5, minsize, fibonacciNums[fibonacciNums.length - 1]));
+    sq.push(new Square(0, -2, -10, minsize, fibonacciNums[fibonacciNums.length - 1]));
 
     for (let i = fibonacciNums.length - 2; i >= 0; i--) {
         //add new length variable
